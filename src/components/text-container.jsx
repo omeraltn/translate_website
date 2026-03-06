@@ -1,12 +1,54 @@
 import { ArrowRight, Volume2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setText } from "../redux/slices/translate-slice";
+import Loader from "./loader";
 
 const TextContainer = () => {
   const dispatch = useDispatch();
-  const { textToTranslate, translatedText, isLoading } = useSelector(
-    (store) => store.translateReducer,
-  );
+  const { textToTranslate, sourceLang, targetLang, translatedText, isLoading } =
+    useSelector((store) => store.translateReducer);
+
+  // çevrilecek metni temizler
+
+  const handleClear = () => {
+    dispatch(setText(""));
+  };
+  //çeviri sonucunu kopyala
+
+  const handleCopy = () => {
+    window.navigator.clipboard.writeText(translatedText);
+  };
+
+  // kaynak metni seslendir
+  const handleSpeakSource = () => {
+    //devam eden bir seslendirme varsa durdur
+    window.speechSynthesis.cancel();
+
+    // SpeechSynthesisUtterance: seslendirecek metni ve ayarlarını tutan bir nesne oluşturur
+    const utterance = new SpeechSynthesisUtterance(textToTranslate);
+
+    //utterance.lang: hangi dilde / aksanda konuşsun
+    if (sourceLang.value) {
+      utterance.lang = sourceLang.value;
+    }
+
+    //oluşturulan utterance nesnesini seslendirmeye başla
+    //tarayıcının ses sentezleme moturunu kullanarak metni sesli olarak okur
+
+    window.speechSynthesis.speak(utterance);
+  };
+  // hedef metni seslendir
+  const handleSpeakTarget = () => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(translatedText);
+
+    if (targetLang.value) {
+      utterance.lang = sourceLang.value;
+    }
+
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
     <div className="flex gap-4 mt-6 lg:gap-8 flex-col lg:flex-row">
       {/* çevirilecek metin */}
@@ -14,15 +56,18 @@ const TextContainer = () => {
         <div className="flex items-center justify-between mb-2 ">
           <label className="text-sm text-zinc-300">Çevrilecek Metin</label>
           <div className="flex items-center gap-3">
-            <button className="btn">
+            <button onClick={handleSpeakSource} className="btn">
               <Volume2 className="size-4" />
               Seslendir
             </button>
-            <button className="btn">Temizle</button>
+            <button className="btn" onClick={handleClear}>
+              Temizle
+            </button>
           </div>
         </div>
         <div>
           <textarea
+            maxLength={10000}
             placeholder="Çevirmek istediğiniz metni buraya yazınız..."
             value={textToTranslate}
             onChange={(e) => dispatch(setText(e.target.value))}
@@ -40,11 +85,13 @@ const TextContainer = () => {
         <div className="flex items-center justify-between mb-2 ">
           <label className="text-sm text-zinc-300">Çeviri Sonucu</label>
           <div className="flex items-center gap-3">
-            <button className="btn">
+            <button onClick={handleSpeakTarget} className="btn">
               <Volume2 className="size-4" />
               Seslendir
             </button>
-            <button className="btn">Kopyala</button>
+            <button className="btn" onClick={handleCopy}>
+              Kopyala
+            </button>
           </div>
         </div>
         <div className="relative ">
@@ -54,10 +101,17 @@ const TextContainer = () => {
             value={translatedText}
           ></textarea>
 
-          {!isLoading && !translatedText && !textToTranslate.trim() && (
-            <div className=" absolute inset-0 grid place-items-center">
-              <p className="text-zinc-500 text-sm">Çeviri Bekleniyor...</p>
-            </div>
+          {/* loader */}
+          {isLoading ? (
+            <Loader />
+          ) : (
+            !isLoading &&
+            !translatedText &&
+            !textToTranslate.trim() && (
+              <div className=" absolute inset-0 grid place-items-center">
+                <p className="text-zinc-500 text-sm">Çeviri Bekleniyor...</p>
+              </div>
+            )
           )}
         </div>
       </div>

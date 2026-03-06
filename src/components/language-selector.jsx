@@ -3,7 +3,11 @@ import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ReactSelect from "react-select";
 import { selectStyles } from "./utils/constants";
-import { setSourceLang, setTargetLang } from "../redux/slices/translate-slice";
+import {
+  setSourceLang,
+  setTargetLang,
+  swap,
+} from "../redux/slices/translate-slice";
 
 const LanguageSelector = () => {
   const { isLoading, error, languages } = useSelector(
@@ -28,11 +32,16 @@ const LanguageSelector = () => {
   //dili algıla seçeneği
   const detect = { label: "Dili algıla", value: undefined };
 
+  //değiştirme
+  const handleSwap = () => {
+    dispatch(swap());
+  };
+
   return (
-    <div className="space-y-4 ">
-      <div className="flex items-center gap-3 flex-col lg:flex-row ">
+    <div className="space-y-4 relative">
+      <div className="flex items-center gap-3 flex-col lg:flex-row  lg:items-end">
         {/* kaynak dil */}
-        <div className="flex-1 w-full ">
+        <div className="flex-1 w-full max-lg:mb-6 lg:mr-14">
           <label className="text-sm text-zinc-300 block mb-2">Kaynak Dil</label>
           <ReactSelect
             isDisabled={isLoading}
@@ -41,14 +50,21 @@ const LanguageSelector = () => {
             className="text-black"
             styles={selectStyles}
             onChange={(lang) => {
+              if (lang.value === targetLang.value) {
+                return handleSwap(lang);
+              }
               dispatch(setSourceLang(lang));
             }}
             value={sourceLang}
           />
         </div>
         {/* değiştirme butonu */}
-        <div className="flex justify-center items-center ">
-          <button className="size-10 lg:size-12 bg-zinc-700 rounded-full flex justify-center items-center">
+        <div className="flex justify-center items-center absolute mt-22  lg:ml-124 lg:mt-8 xl:ml-132">
+          <button
+            disabled={!sourceLang.value}
+            className="size-10 lg:size-12 bg-zinc-700 rounded-full flex justify-center items-center disabled:opacity-50"
+            onClick={handleSwap}
+          >
             <ArrowLeftRight className="size-5 " />
           </button>
         </div>
@@ -63,6 +79,9 @@ const LanguageSelector = () => {
             styles={selectStyles}
             value={targetLang}
             onChange={(lang) => {
+              if (lang.value === sourceLang.value) {
+                return handleSwap(lang);
+              }
               dispatch(setTargetLang(lang));
             }}
           />

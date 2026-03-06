@@ -11,7 +11,7 @@ const Button = () => {
       <button
         disabled={isLoading || !textToTranslate.trim()}
         onClick={() => dispatch(translateText())}
-        className="relative px-6 py-3 rounded-xl font-semibold text-lg bg-linear-to-r from-red-600  to-purple-600 -transparent hover:from-red-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:from-zinc-700"
+        className="relative px-6 py-3 rounded-xl font-semibold text-lg bg-linear-to-r from-red-800  via-red-600 to-red-400 -transparent hover:from-red-700 hover: to-red-400 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:from-zinc-700"
       >
         <div className="flex items-center gap-3 ">
           <Languages className="size-5" />
