@@ -36,11 +36,8 @@
 
 ![](./public/translate.gif)
 
-### 🔗 Project Link
 
-- **GitHub:**
-
-# 🌐 Translate +
+# 🌐 Çeviri Websitesi+
 
 - React 19 ve Redux Toolkit kullanılarak geliştirilmiş, 130'dan fazla dili destekleyen modern ve yüksek performanslı bir çeviri uygulamasıdır.
 
@@ -78,6 +75,3 @@
 
 ![](./public/translate.gif)
 
-### 🔗 Proje Linki
-
-- **GitHub:**
